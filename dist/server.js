@@ -6,13 +6,12 @@ const https = require("https");
 const fs = require("fs");
 const app = require("./app");
 const PORT = process.env.PORT || 3000;
-const isProduction = process.env.NODE_ENV === "production";
-if (isProduction) {
+if (process.env.NODE_ENV === "production") {
     // ==========================================
-    // === CLOUD DEPLOYMENT (Render/Heroku)   ===
+    // === RENDER / CLOUD DEPLOYMENT          ===
     // ==========================================
-    // Cloud providers handle SSL. We run a standard HTTP server.
-    // We bind to '0.0.0.0' so it accepts external traffic from the internet.
+    // Render handles HTTPS. We run a standard HTTP server.
+    // We bind to '0.0.0.0' so Render can route external traffic to it.
     const server = http.createServer(app);
     server.listen(PORT, "0.0.0.0", () => {
         console.log(`[Production] HTTP Server running on port ${PORT}`);
@@ -22,7 +21,6 @@ else {
     // ==========================================
     // === LOCAL DEVELOPMENT                  ===
     // ==========================================
-    // Use your local HTTPS setup with custom certificates
     const SSL_KEY_PATH = process.env.SSL_KEY_PATH || "./cert/key.pem";
     const SSL_CERT_PATH = process.env.SSL_CERT_PATH || "./cert/cert.pem";
     const options = {

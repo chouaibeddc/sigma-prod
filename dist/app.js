@@ -1,12 +1,11 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 /**
  *  Author  : EL KHYATI Bouchaib
  *  version : 1.0.0
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-const console = require("node:console");
 /* Import required depencies */
-const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -67,7 +66,7 @@ app.use(cookieParser());
 //   }),
 // );
 app.use(cors({
-    origin: true, // <--- CHANGE THIS TO true (Allows all origins in production)
+    origin: process.env.NODE_ENV === "production" ? true : "http://localhost:5173",
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
@@ -97,13 +96,10 @@ app.use("/api/authmngr", authmngrRoutes);
 // === SERVE REACT FRONTEND (PRODUCTION)  ===
 // ==========================================
 if (process.env.NODE_ENV === "production") {
-    // __dirname is likely .../backend/dist or .../backend/src
-    // ../public points to .../backend/public where we will put the React build
+    // __dirname is .../dist, so ../public points to the backend root's public folder
     const frontendDistPath = path.join(__dirname, "../public");
-    // Serve the static React files
     app.use(express.static(frontendDistPath));
-    // Catch-all handler: Send back React's index.html file for any unknown routes
-    // This is required for React Router to work properly in production
+    // Catch-all handler: Send back React's index.html for React Router
     app.get("*", (req, res) => {
         res.sendFile(path.join(frontendDistPath, "index.html"));
     });
